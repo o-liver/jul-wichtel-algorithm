@@ -5,6 +5,9 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-go@v1
+        with:
+          go-version: '1.18.x'
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
@@ -15,6 +18,8 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
+      - name: Execute go code
+        run: go run wichtel.go
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
 
