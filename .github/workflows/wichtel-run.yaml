@@ -18,6 +18,8 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       - name: Execute go code
         run: go run wichtel.go
       - run: echo "🍏 This job's status is ${{ job.status }}."
