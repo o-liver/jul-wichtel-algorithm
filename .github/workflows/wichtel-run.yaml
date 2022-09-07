@@ -2,7 +2,7 @@ name: Wichtel Run
 
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  Run-Wichtel-Code:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v1
