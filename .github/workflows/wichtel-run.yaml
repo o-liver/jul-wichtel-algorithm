@@ -22,6 +22,8 @@ jobs:
         run: echo $ACCESS_TOKEN && go run wichtel.go
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BABY_BOOMERS_EMAIL: ${{ secrets.BABY_BOOMERS_EMAIL }}
+          MILLENNIALS_EMAIL: ${{ secrets.MILLENNIALS_EMAIL }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
 
