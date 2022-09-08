@@ -32,7 +32,7 @@ func main() {
 		firstSlipOfPaperIndex := 0
 		firstMatch = theHat[firstSlipOfPaperIndex]
 		theHat = removeSlipOfPaperWithIndex(theHat, firstSlipOfPaperIndex)
-		for index, slipOfPaper := range theHat[1:] { // Iterate over slips of paper in the hat starting at the second entry
+		for index, slipOfPaper := range theHat { // Iterate over slips of paper in the hat starting at the second entry
 			secondMatch = slipOfPaper
 			if secondMatch != firstMatch { // If the first and second match are not the same we have the result we want
 				theHat = removeSlipOfPaperWithIndex(theHat, index) // overwrite hat removing the first entry
@@ -42,7 +42,8 @@ func main() {
 		wichtelMatches[boomer] = []string{firstMatch, secondMatch}
 	}
 
-	fmt.Println(wichtelMatches) // TODO: Remove this debug message!
+	fmt.Println("Boomer matches:", wichtelMatches) // TODO: Remove this debug message!
+	fmt.Println("The hat afterwards:", theHat) // TODO: Remove this debug message!
 
 }
 
