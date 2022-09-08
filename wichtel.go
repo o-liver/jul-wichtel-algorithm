@@ -12,10 +12,10 @@ func main() {
 	fmt.Println("I'll be your Wichtel!")
 
 	babyBoomersCommaSeperatedList := os.Getenv("BABY_BOOMERS_EMAIL")
-	babyBoomers := strings.Split(babyBoomersCommaSeperatedList, ",")
+	babyBoomers := strings.Split(babyBoomersCommaSeperatedList, ", ")
 
 	millennialsCommaSeperatedList := os.Getenv("MILLENNIALS_EMAIL")
-	millennials := strings.Split(millennialsCommaSeperatedList, ",")
+	millennials := strings.Split(millennialsCommaSeperatedList, ", ")
 
 	participants := append(babyBoomers, millennials...)
 	fmt.Println("List of participants this christmas:", participants)
