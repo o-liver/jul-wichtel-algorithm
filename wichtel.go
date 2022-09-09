@@ -1,12 +1,23 @@
 package main
 
 import (
+	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/gmail/v1"
+	"google.golang.org/api/option"
+	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 )
+
+const subjectID = "jul-wichtel-algorithm"
 
 func main() {
 	babyBoomersCommaSeperatedList := os.Getenv("BABY_BOOMERS_EMAIL")
@@ -80,7 +91,11 @@ Start:
 		goto Start
 	}
 
-	// TODO Send out emails
+	gmailService := setupGmailService()
+
+	sendOutEmails(wichtelMatches, gmailService)
+
+	deleteWichtelEmails(gmailService)
 }
 
 func removeSlipOfPaperWithIndex(hat []string, index int) []string {
@@ -97,7 +112,89 @@ func shuffleTheHat(hat []string) {
 	})
 }
 
-func sendOutEmailsAndDeleteThemAfter(wichtelMatches map[string][]string) {
-	token := os.Getenv("ACCESS_TOKEN")
-	fmt.Println("This is your secret:", token)
+// Retrieve a token, saves the token, then returns the generated client.
+func getClient(config *oauth2.Config) *http.Client {
+	// The file token.json stores the user's access and refresh tokens, and is
+	// created automatically when the authorization flow completes for the first
+	// time.
+	tok, err := tokenFromEnvironment("TOKEN_JSON")
+	if err != nil {
+		fmt.Errorf("something went wrong reading the authentication json: %v", err)
+	}
+	return config.Client(context.Background(), tok)
+}
+
+// Retrieves a token from a environment.
+func tokenFromEnvironment(envVarName string) (*oauth2.Token, error) {
+	tokenJson := os.Getenv(envVarName)
+	tok := &oauth2.Token{}
+	err := json.NewDecoder(strings.NewReader(tokenJson)).Decode(tok)
+	return tok, err
+}
+
+func setupGmailService() *gmail.Service {
+	ctx := context.Background()
+
+	credentialsJSON := os.Getenv("CREDENTIALS_JSON")
+
+	// If modifying these scopes, delete your previously saved token.json.
+	config, err := google.ConfigFromJSON([]byte(credentialsJSON), gmail.GmailReadonlyScope)
+	if err != nil {
+		log.Fatalf("Unable to parse client secret file to config: %v", err)
+	}
+
+	client := getClient(config)
+
+	gmailService, err := gmail.NewService(ctx, option.WithHTTPClient(client))
+	if err != nil {
+		log.Fatalf("Unable to retrieve gmail Client %v", err)
+	}
+
+	return gmailService
+}
+
+func sendOutEmails(wichtelMatches map[string][]string, gmailService *gmail.Service) {
+	for wichtel, gifted := range wichtelMatches {
+		err := sendEmail(
+			wichtel,
+			fmt.Sprintf("Congratulations, you are secret santa to: %s and %s", gifted[0], gifted[1]),
+			gmailService)
+		if err != nil {
+			log.Fatal("Could not send email: ", err)
+		}
+		fmt.Printf("Sent out email to '%v'\n", wichtel)
+	}
+
+}
+
+func sendEmail(recipient, body string, gmailService *gmail.Service) error {
+	var message gmail.Message
+
+	email := []byte("From: 'me'\r\n" +
+		"To:  " + recipient + "\r\n" +
+		"Subject: Your wichtel result from the " + subjectID + "\r\n" +
+		"\r\n" + body)
+
+	message.Raw = base64.StdEncoding.EncodeToString(email)
+	message.Raw = strings.Replace(message.Raw, "/", "_", -1)
+	message.Raw = strings.Replace(message.Raw, "+", "-", -1)
+	message.Raw = strings.Replace(message.Raw, "=", "", -1)
+
+	_, err := gmailService.Users.Messages.Send("me", &message).Do()
+	return err
+}
+
+func deleteWichtelEmails(gmailService *gmail.Service) {
+	response, err := gmailService.Users.Messages.List("me").Q(subjectID).Do()
+	if err != nil {
+		log.Fatal("Could not read list of wichtel mails: ", err)
+	}
+	fmt.Printf("Found %v messages with subject '%s'\n", len(response.Messages), subjectID)
+	for index, message := range response.Messages {
+		err = gmailService.Users.Messages.Delete("me", message.Id).Do()
+		if err != nil {
+			log.Fatalf("Could not delete message with ID '%v'; err: %v", message.Id, err)
+		}
+		fmt.Printf("Deleted messages number %v\n", index + 1)
+	}
 }
