@@ -190,6 +190,7 @@ func deleteWichtelEmails(gmailService *gmail.Service) {
 		log.Fatal("Could not read list of wichtel mails: ", err)
 	}
 	fmt.Printf("Found %v messages with subject '%s'\n", len(response.Messages), subjectID)
+	time.Sleep(time.Second)
 	for index, message := range response.Messages {
 		err = gmailService.Users.Messages.Delete("me", message.Id).Do()
 		if err != nil {
