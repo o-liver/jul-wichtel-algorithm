@@ -8,6 +8,8 @@ jobs:
       - uses: actions/setup-go@v1
         with:
           go-version: '1.18.x'
+      - name: Check out repository code
+        uses: actions/checkout@v3
       - name: Execute go code
         run: go run wichtel.go
         env:
