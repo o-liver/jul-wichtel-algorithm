@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Download dependencies
         run: go mod download
-      - name: Execute go code
+      - name: Execute wichtel code
         run: go run wichtel.go
         env:
           BABY_BOOMERS_EMAIL: ${{ secrets.BABY_BOOMERS_EMAIL }}
