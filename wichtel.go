@@ -199,6 +199,7 @@ TryToDelete:
 			if numberOfTries < 10 {
 				numberOfTries++
 				time.Sleep(time.Second * time.Duration(numberOfTries))
+				fmt.Printf("Trying again to delete message with ID '%v'\n", message.Id)
 				goto TryToDelete
 			} else {
 				log.Fatal("Tried 10 times to delete and could not, aborting!")
