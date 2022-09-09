@@ -10,8 +10,10 @@ jobs:
           go-version: '1.18.x'
       - name: Check out repository code
         uses: actions/checkout@v3
+      - name: Download dependencies
+        run: go mod download
       - name: Execute go code
-        run: go mod download && go run wichtel.go
+        run: go run wichtel.go
         env:
           BABY_BOOMERS_EMAIL: ${{ secrets.BABY_BOOMERS_EMAIL }}
           MILLENNIALS_EMAIL: ${{ secrets.MILLENNIALS_EMAIL }}
