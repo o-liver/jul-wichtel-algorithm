@@ -8,16 +8,6 @@ jobs:
       - uses: actions/setup-go@v1
         with:
           go-version: '1.18.x'
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
       - name: Execute go code
         run: go run wichtel.go
         env:
@@ -25,7 +15,6 @@ jobs:
           MILLENNIALS_EMAIL: ${{ secrets.MILLENNIALS_EMAIL }}
           TOKEN_JSON: ${{ secrets.TOKEN_JSON }}
           CREDENTIALS_JSON: ${{ secrets.CREDENTIALS_JSON }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
 
 
 
