@@ -19,11 +19,12 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - name: Execute go code
-        run: echo $ACCESS_TOKEN && go run wichtel.go
+        run: go run wichtel.go
         env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           BABY_BOOMERS_EMAIL: ${{ secrets.BABY_BOOMERS_EMAIL }}
           MILLENNIALS_EMAIL: ${{ secrets.MILLENNIALS_EMAIL }}
+          TOKEN_JSON: ${{ secrets.TOKEN_JSON }}
+          CREDENTIALS_JSON: ${{ secrets.CREDENTIALS_JSON }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
 
