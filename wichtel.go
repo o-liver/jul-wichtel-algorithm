@@ -19,6 +19,11 @@ import (
 
 const subjectID = "jul-wichtel-algorithm"
 
+type slipOfPaper struct {
+	email string
+	group string
+}
+
 func main() {
 	babyBoomersCommaSeperatedList := os.Getenv("BABY_BOOMERS_EMAIL")
 	babyBoomers := strings.Split(babyBoomersCommaSeperatedList, ", ")
@@ -32,42 +37,46 @@ Start:
 	fmt.Println("I'll be your Wichtel!")
 	fmt.Println("List of participants this christmas:", participants)
 	fmt.Println("Adding millennial's twice into the hat.")
-	theHat := append(millennials, millennials...)
+	groupAMillenials := createSlipsOfPaper(millennials, "A")
+	groupBMillenials := createSlipsOfPaper(millennials, "B")
+	theHat := append(groupAMillenials, groupBMillenials...)
 
 	// Shuffle the participants in the hat
 	shuffleTheHat(theHat)
 
-	wichtelMatches := make(map[string][]string, len(participants))
+	wichtelMatches := make(map[string][]slipOfPaper, len(participants))
 	for _, boomer := range babyBoomers {
-		var firstMatch, secondMatch string
+		var firstMatch, secondMatch slipOfPaper
 		firstSlipOfPaperIndex := 0
 		firstMatch = theHat[firstSlipOfPaperIndex]
 		theHat = removeSlipOfPaperWithIndex(theHat, firstSlipOfPaperIndex)
 		fmt.Printf("Found first match for '%v'.\n", boomer)
-		for index, slipOfPaper := range theHat { // Iterate over slips of paper in the hat starting at the second entry
+		for index, slipOfPaper := range theHat { // Iterate over remaining slips of paper in the hat
 			secondMatch = slipOfPaper
-			if secondMatch != firstMatch { // If the first and second match are not the same we have the result we want
+			if secondMatch.email != firstMatch.email { // If the first and second match are not the same we have the result we want
 				theHat = removeSlipOfPaperWithIndex(theHat, index) // overwrite hat removing the first entry
 				fmt.Printf("Found second match for '%v', that is not equal to the first match.\n", boomer)
 				break // we can break our of the for loop
 			} // else we go to the next slip of paper
 		}
-		wichtelMatches[boomer] = []string{firstMatch, secondMatch}
+		wichtelMatches[boomer] = []slipOfPaper{firstMatch, secondMatch}
 	}
 
 	fmt.Println("Adding baby boomers twice into the hat.")
-	theHat = append(theHat, babyBoomers...)
-	theHat = append(theHat, babyBoomers...)
+	groupABabyBoomers := createSlipsOfPaper(babyBoomers, "A")
+	groupBBabyBoomers := createSlipsOfPaper(babyBoomers, "B")
+	theHat = append(theHat, groupABabyBoomers...)
+	theHat = append(theHat, groupBBabyBoomers...)
 
 	shuffleTheHat(theHat)
 
 	// Find matches for the millennials
 	for _, millennial := range millennials {
-		var firstMatch, secondMatch string
+		var firstMatch, secondMatch slipOfPaper
 		// Make sure the participant did not pull their own name
 		for index, slipOfPaper := range theHat {
 			firstMatch = slipOfPaper
-			if firstMatch != millennial {
+			if firstMatch.email != millennial {
 				theHat = removeSlipOfPaperWithIndex(theHat, index)
 				fmt.Printf("Found first match for '%v'.\n", millennial)
 				break
@@ -77,13 +86,13 @@ Start:
 		for index, slipOfPaper := range theHat { // Iterate over slips of paper in the hat starting at the second entry
 			secondMatch = slipOfPaper
 			// Make sure the participant did not pull their own name
-			if secondMatch != millennial && secondMatch != firstMatch {
+			if secondMatch.email != millennial && secondMatch.email != firstMatch.email {
 				theHat = removeSlipOfPaperWithIndex(theHat, index) // overwrite hat removing the first entry
 				fmt.Printf("Found second match for '%v', that is not equal to the first match.\n", millennial)
 				break // we can break our of the for loop
 			}
 		}
-		wichtelMatches[millennial] = []string{firstMatch, secondMatch}
+		wichtelMatches[millennial] = []slipOfPaper{firstMatch, secondMatch}
 	}
 
 	if len(theHat) > 0 {
@@ -98,14 +107,25 @@ Start:
 	deleteWichtelEmails(gmailService)
 }
 
-func removeSlipOfPaperWithIndex(hat []string, index int) []string {
-	newHat := make([]string, 0)
+func createSlipsOfPaper(emails []string, group string) []slipOfPaper {
+	var slipsOfPaper []slipOfPaper
+	for _, email := range emails {
+		slipsOfPaper = append(slipsOfPaper, slipOfPaper{
+			email: email,
+			group: group,
+		})
+	}
+	return slipsOfPaper
+}
+
+func removeSlipOfPaperWithIndex(hat []slipOfPaper, index int) []slipOfPaper {
+	newHat := make([]slipOfPaper, 0)
 	newHat = append(newHat, hat[:index]...)   // Retrieve entries before index
 	newHat = append(newHat, hat[index+1:]...) // Retrieve entries after index
 	return newHat
 }
 
-func shuffleTheHat(hat []string) {
+func shuffleTheHat(hat []slipOfPaper) {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(hat), func(i, j int) {
 		hat[i], hat[j] = hat[j], hat[i]
@@ -153,11 +173,12 @@ func setupGmailService() *gmail.Service {
 	return gmailService
 }
 
-func sendOutEmails(wichtelMatches map[string][]string, gmailService *gmail.Service) {
+func sendOutEmails(wichtelMatches map[string][]slipOfPaper, gmailService *gmail.Service) {
 	for wichtel, gifted := range wichtelMatches {
 		err := sendEmail(
 			wichtel,
-			fmt.Sprintf("Congratulations, you are secret santa to: %s and %s", gifted[0], gifted[1]),
+			fmt.Sprintf("Congratulations, you are\nsecret santa '%s' to %s\nand secret santa '%s' to %s",
+				gifted[0].group, gifted[0].email, gifted[1].group, gifted[1].email),
 			gmailService)
 		if err != nil {
 			log.Fatal("Could not send email: ", err)
