@@ -45,17 +45,17 @@ Start:
 	shuffleTheHat(theHat)
 
 	wichtelMatches := make(map[string][]slipOfPaper, len(participants))
-	for _, boomer := range babyBoomers {
+	for boomerIndex, boomer := range babyBoomers {
 		var firstMatch, secondMatch slipOfPaper
 		firstSlipOfPaperIndex := 0
 		firstMatch = theHat[firstSlipOfPaperIndex]
 		theHat = removeSlipOfPaperWithIndex(theHat, firstSlipOfPaperIndex)
-		fmt.Printf("Found first match for '%v'.\n", boomer)
+		fmt.Printf("Found first match for baby boomer no. '%v'.\n", boomerIndex+1)
 		for index, slipOfPaper := range theHat { // Iterate over remaining slips of paper in the hat
 			secondMatch = slipOfPaper
 			if secondMatch.email != firstMatch.email { // If the first and second match are not the same we have the result we want
 				theHat = removeSlipOfPaperWithIndex(theHat, index) // overwrite hat removing the first entry
-				fmt.Printf("Found second match for '%v', that is not equal to the first match.\n", boomer)
+				fmt.Printf("Found second match for baby boomer no. '%v', that is not equal to the first match.\n", boomerIndex+1)
 				break // we can break our of the for loop
 			} // else we go to the next slip of paper
 		}
@@ -71,14 +71,14 @@ Start:
 	shuffleTheHat(theHat)
 
 	// Find matches for the millennials
-	for _, millennial := range millennials {
+	for millennialIndex, millennial := range millennials {
 		var firstMatch, secondMatch slipOfPaper
 		// Make sure the participant did not pull their own name
 		for index, slipOfPaper := range theHat {
 			firstMatch = slipOfPaper
 			if firstMatch.email != millennial {
 				theHat = removeSlipOfPaperWithIndex(theHat, index)
-				fmt.Printf("Found first match for '%v'.\n", millennial)
+				fmt.Printf("Found first match for millenial no. '%v'.\n", millennialIndex+1)
 				break
 			}
 		}
@@ -88,7 +88,7 @@ Start:
 			// Make sure the participant did not pull their own name
 			if secondMatch.email != millennial && secondMatch.email != firstMatch.email {
 				theHat = removeSlipOfPaperWithIndex(theHat, index) // overwrite hat removing the first entry
-				fmt.Printf("Found second match for '%v', that is not equal to the first match.\n", millennial)
+				fmt.Printf("Found second match for millenial no. '%v', that is not equal to the first match.\n", millennialIndex+1)
 				break // we can break our of the for loop
 			}
 		}
@@ -174,6 +174,7 @@ func setupGmailService() *gmail.Service {
 }
 
 func sendOutEmails(wichtelMatches map[string][]slipOfPaper, gmailService *gmail.Service) {
+	emailCounter := 0
 	for wichtel, gifted := range wichtelMatches {
 		err := sendEmail(
 			wichtel,
@@ -183,7 +184,8 @@ func sendOutEmails(wichtelMatches map[string][]slipOfPaper, gmailService *gmail.
 		if err != nil {
 			log.Fatal("Could not send email: ", err)
 		}
-		fmt.Printf("Sent out email to '%v'\n", wichtel)
+		emailCounter++
+		fmt.Printf("Sent out email no. %v\n", emailCounter)
 	}
 
 }
@@ -213,7 +215,7 @@ func deleteWichtelEmails(gmailService *gmail.Service) {
 	fmt.Printf("Found %v messages with subject '%s'\n", len(response.Messages), subjectID)
 	for index, message := range response.Messages {
 		numberOfTries := 0
-TryToDelete:
+	TryToDelete:
 		err = gmailService.Users.Messages.Delete("me", message.Id).Do()
 		if err != nil {
 			fmt.Printf("Could not delete message with ID '%v'; err: %v\n", message.Id, err)
@@ -227,6 +229,6 @@ TryToDelete:
 			}
 
 		}
-		fmt.Printf("Deleted messages number %v\n", index + 1)
+		fmt.Printf("Deleted messages number %v\n", index+1)
 	}
 }
