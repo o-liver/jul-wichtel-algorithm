@@ -35,7 +35,6 @@ func main() {
 
 Start:
 	fmt.Println("I'll be your Wichtel!")
-	fmt.Println("List of participants this christmas:", participants)
 	fmt.Println("Adding millennial's twice into the hat.")
 	groupAMillenials := createSlipsOfPaper(millennials, "A")
 	groupBMillenials := createSlipsOfPaper(millennials, "B")
