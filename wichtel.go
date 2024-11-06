@@ -98,11 +98,11 @@ Start:
 
 	if len(theHat) > 0 {
 		numberOfTries++
-		if numberOfTries < 10 {
+		if numberOfTries < 100 {
 			fmt.Println("Oh-Oh, the last participant found their own name in the hat, starting over...\n")
 			goto Start
 		} else {
-			log.Fatal("Tried 10 times to find a match for the last participant, aborting!")
+			log.Fatal("Tried 100 times to find a match for the last participant, aborting!")
 		}
 	}
 
