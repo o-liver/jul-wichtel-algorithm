@@ -25,10 +25,10 @@ type slipOfPaper struct {
 }
 
 func main() {
-	babyBoomersCommaSeperatedList := os.Getenv("BABY_BOOMERS_EMAIL")
+	babyBoomersCommaSeperatedList := os.Getenv("TEST_BABY_BOOMERS_EMAIL")
 	babyBoomers := strings.Split(babyBoomersCommaSeperatedList, ", ")
 
-	millennialsCommaSeperatedList := os.Getenv("MILLENNIALS_EMAIL")
+	millennialsCommaSeperatedList := os.Getenv("TEST_MILLENNIALS_EMAIL")
 	millennials := strings.Split(millennialsCommaSeperatedList, ", ")
 
 	participants := append(babyBoomers, millennials...)
