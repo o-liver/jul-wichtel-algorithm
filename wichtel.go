@@ -154,7 +154,7 @@ func tokenFromEnvironment(envVarName string) (*oauth2.Token, error) {
 func setupGmailService() *gmail.Service {
 	ctx := context.Background()
 
-	credentialsJSON := os.Getenv("CREDENTIALS_JSON")
+	credentialsJSON := os.Getenv("GMAIL_CREDENTIAL_JSON_2024")
 
 	// If modifying these scopes, delete your previously saved token.json.
 	config, err := google.ConfigFromJSON([]byte(credentialsJSON), gmail.GmailReadonlyScope)
