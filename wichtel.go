@@ -132,7 +132,6 @@ func removeSlipOfPaperWithIndex(hat []slipOfPaper, index int) []slipOfPaper {
 }
 
 func shuffleTheHat(hat []slipOfPaper) {
-	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(hat), func(i, j int) {
 		hat[i], hat[j] = hat[j], hat[i]
 	})
