@@ -38,9 +38,9 @@ func main() {
 Start:
 	fmt.Println("I'll be your Wichtel!")
 	fmt.Println("Adding millennial's twice into the hat.")
-	groupAMillenials := createSlipsOfPaper(millennials, "A")
-	groupBMillenials := createSlipsOfPaper(millennials, "B")
-	theHat := append(groupAMillenials, groupBMillenials...)
+	groupAMillennials := createSlipsOfPaper(millennials, "A")
+	groupBMillennials := createSlipsOfPaper(millennials, "B")
+	theHat := append(groupAMillennials, groupBMillennials...)
 
 	// Shuffle the participants in the hat
 	shuffleTheHat(theHat)
