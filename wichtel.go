@@ -29,9 +29,11 @@ func main() {
 
 	babyBoomersCommaSeperatedList := os.Getenv("TEST_BABY_BOOMERS_EMAIL")
 	babyBoomers := strings.Split(babyBoomersCommaSeperatedList, ", ")
+	fmt.Printf("Baby boomers: %v\n", babyBoomers)
 
 	millennialsCommaSeperatedList := os.Getenv("TEST_MILLENNIALS_EMAIL")
 	millennials := strings.Split(millennialsCommaSeperatedList, ", ")
+	fmt.Printf("Millennials: %v\n", millennials)
 
 	participants := append(babyBoomers, millennials...)
 
