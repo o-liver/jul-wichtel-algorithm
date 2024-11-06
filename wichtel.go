@@ -79,7 +79,7 @@ Start:
 			firstMatch = slipOfPaper
 			if firstMatch.email != millennial {
 				theHat = removeSlipOfPaperWithIndex(theHat, index)
-				fmt.Printf("Found first match for millenial no. '%v'.\n", millennialIndex+1)
+				fmt.Printf("Found first match for millennial no. '%v'.\n", millennialIndex+1)
 				break
 			}
 		}
@@ -89,7 +89,7 @@ Start:
 			// Make sure the participant did not pull their own name
 			if secondMatch.email != millennial && secondMatch.email != firstMatch.email {
 				theHat = removeSlipOfPaperWithIndex(theHat, index) // overwrite hat removing the first entry
-				fmt.Printf("Found second match for millenial no. '%v', that is not equal to the first match.\n", millennialIndex+1)
+				fmt.Printf("Found second match for millennial no. '%v', that is not equal to the first match.\n", millennialIndex+1)
 				break // we can break our of the for loop
 			}
 		}
@@ -161,7 +161,7 @@ func tokenFromEnvironment(envVarName string) (*oauth2.Token, error) {
 func setupGmailService() *gmail.Service {
 	ctx := context.Background()
 
-	credentialsJSON := os.Getenv("GMAIL_CREDENTIAL_JSON_2024")
+	credentialsJSON := os.Getenv("CREDENTIALS_JSON")
 
 	// If modifying these scopes, delete your previously saved token.json.
 	config, err := google.ConfigFromJSON([]byte(credentialsJSON), gmail.GmailReadonlyScope)
