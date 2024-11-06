@@ -19,6 +19,3 @@ jobs:
           MILLENNIALS_EMAIL: ${{ secrets.TEST_MILLENNIALS_EMAIL }}
           TOKEN_JSON: ${{ secrets.TOKEN_JSON }}
           CREDENTIALS_JSON: ${{ secrets.CREDENTIALS_JSON }}
-
-
-
