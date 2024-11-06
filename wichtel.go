@@ -25,6 +25,8 @@ type slipOfPaper struct {
 }
 
 func main() {
+	numberOfTries := 0
+
 	babyBoomersCommaSeperatedList := os.Getenv("TEST_BABY_BOOMERS_EMAIL")
 	babyBoomers := strings.Split(babyBoomersCommaSeperatedList, ", ")
 
@@ -95,8 +97,13 @@ Start:
 	}
 
 	if len(theHat) > 0 {
-		fmt.Println("Oh-Oh, the last participant found their own name in the hat, starting over...\n")
-		goto Start
+		numberOfTries++
+		if numberOfTries < 10 {
+			fmt.Println("Oh-Oh, the last participant found their own name in the hat, starting over...\n")
+			goto Start
+		} else {
+			log.Fatal("Tried 10 times to find a match for the last participant, aborting!")
+		}
 	}
 
 	gmailService := setupGmailService()
