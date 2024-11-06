@@ -10,3 +10,5 @@ go run generate_token.go
 ```
 
 Follow the url and enter the subsequent auth code.
+
+After that cat the token.json to console and update the `TOKEN_JSON` github action secret.
