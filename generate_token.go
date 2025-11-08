@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func main() {
+func generateToken() {
 	credentialsJSON := os.Getenv("CREDENTIALS_JSON")
 	config, err := google.ConfigFromJSON([]byte(credentialsJSON), "https://mail.google.com/")
 	if err != nil {
