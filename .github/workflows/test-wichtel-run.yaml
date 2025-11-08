@@ -1,4 +1,4 @@
-name: Wichtel Run
+name: Test Wichtel Run
 
 on: workflow_dispatch
 jobs:
@@ -15,9 +15,9 @@ jobs:
       - name: Execute wichtel code
         run: go run wichtel.go
         env:
-          BABY_BOOMERS_EMAIL: ${{ vars.BABY_BOOMERS_EMAIL }}
-          MILLENNIALS_EMAIL: ${{ vars.MILLENNIALS_EMAIL }}
-          SPECIAL_MILLENNIAL_EMAIL: ${{ vars.SPECIAL_MILLENNIAL_EMAIL }}
-          SPECIAL_BABY_BOOMER_EMAIL: ${{ vars.SPECIAL_BABY_BOOMER_EMAIL }}
+          BABY_BOOMERS_EMAIL: ${{ vars.TEST_BABY_BOOMERS_EMAIL }}
+          MILLENNIALS_EMAIL: ${{ vars.TEST_MILLENNIALS_EMAIL }}
+          SPECIAL_MILLENNIAL_EMAIL: ${{ vars.TEST_SPECIAL_MILLENNIAL_EMAIL }}
+          SPECIAL_BABY_BOOMER_EMAIL: ${{ vars.TEST_SPECIAL_BABY_BOOMER_EMAIL }}
           TOKEN_JSON: ${{ secrets.TOKEN_JSON }}
           CREDENTIALS_JSON: ${{ secrets.CREDENTIALS_JSON }}
