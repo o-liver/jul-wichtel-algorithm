@@ -5,16 +5,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/gmail/v1"
-	"google.golang.org/api/option"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/gmail/v1"
+	"google.golang.org/api/option"
 )
 
 const subjectID = "jul-wichtel-algorithm"
@@ -106,6 +107,71 @@ Start:
 		}
 	}
 
+	// Post-processing: Ensure special millennial gets special boomer (if env vars are set)
+	specialMillenial := os.Getenv("SPECIAL_MILLENNIAL_EMAIL")
+	specialBoomer := os.Getenv("SPECIAL_BOOMER_EMAIL")
+
+	if specialMillenial != "" && specialBoomer != "" {
+		fmt.Printf("Special pairing environment variables detected:\n")
+		fmt.Printf("  SPECIAL_MILLENNIAL_EMAIL: %s\n", specialMillenial)
+		fmt.Printf("  SPECIAL_BOOMER_EMAIL: %s\n", specialBoomer)
+		
+		specialBoomerExists := contains(babyBoomers, specialBoomer)
+		specialMillenialExists := contains(millennials, specialMillenial)
+
+		if specialBoomerExists && specialMillenialExists {
+			fmt.Printf("Checking for special pairing: %s should get %s\n", specialMillenial, specialBoomer)
+			
+			// Find who currently has the special boomer
+			var currentOwnerOfSpecialBoomer string
+			var specialBoomerIndex int
+			var foundSpecialBoomer bool
+			
+			for participant, matches := range wichtelMatches {
+				for i, match := range matches {
+					if match.email == specialBoomer {
+						currentOwnerOfSpecialBoomer = participant
+						specialBoomerIndex = i
+						foundSpecialBoomer = true
+						break
+					}
+				}
+				if foundSpecialBoomer {
+					break
+				}
+			}
+			
+			if foundSpecialBoomer && currentOwnerOfSpecialBoomer != specialMillenial {
+				fmt.Printf("Current owner of %s is %s, swapping with %s\n", specialBoomer, currentOwnerOfSpecialBoomer, specialMillenial)
+				
+				// Get the matches for both participants
+				specialMillenialMatches := wichtelMatches[specialMillenial]
+				currentOwnerMatches := wichtelMatches[currentOwnerOfSpecialBoomer]
+				
+				// Perform the swap: give special millennial the special boomer,
+				// and give current owner what the special millennial had at the same index
+				temp := specialMillenialMatches[specialBoomerIndex]
+				wichtelMatches[specialMillenial][specialBoomerIndex] = currentOwnerMatches[specialBoomerIndex]
+				wichtelMatches[currentOwnerOfSpecialBoomer][specialBoomerIndex] = temp
+				
+				fmt.Printf("✅ Successfully swapped! %s now gets %s as %s\n", specialMillenial, specialBoomer, wichtelMatches[specialMillenial][specialBoomerIndex].group)
+			} else if currentOwnerOfSpecialBoomer == specialMillenial {
+				fmt.Printf("✅ %s already has %s - no swap needed!\n", specialMillenial, specialBoomer)
+			} else {
+				fmt.Printf("⚠️  Could not find %s in the matches\n", specialBoomer)
+			}
+		} else {
+			if !specialBoomerExists {
+				fmt.Printf("⚠️  Special boomer %s not found in baby boomers list\n", specialBoomer)
+			}
+			if !specialMillenialExists {
+				fmt.Printf("⚠️  Special millennial %s not found in millennials list\n", specialMillenial)
+			}
+		}
+	} else {
+		fmt.Println("No special pairing environment variables set - running normal algorithm")
+	}
+
 	gmailService := setupGmailService()
 
 	sendOutEmails(wichtelMatches, gmailService)
@@ -135,6 +201,16 @@ func shuffleTheHat(hat []slipOfPaper) {
 	rand.Shuffle(len(hat), func(i, j int) {
 		hat[i], hat[j] = hat[j], hat[i]
 	})
+}
+
+// Helper function to check if a string slice contains a specific value
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
