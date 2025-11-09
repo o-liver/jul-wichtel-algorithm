@@ -39,7 +39,7 @@ func main() {
 Start:
 	// Create a fresh random generator for each attempt
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	
+
 	fmt.Println("I'll be your Wichtel!")
 	fmt.Println("Adding millennial's twice into the hat.")
 	groupAMillennials := createSlipsOfPaper(millennials, "A")
@@ -123,43 +123,72 @@ Start:
 		if specialBoomerExists && specialMillenialExists {
 			fmt.Printf("Checking for special pairing between designated participants\n")
 
-			// Find who currently has the special boomer
-			var currentOwnerOfSpecialBoomer string
-			var specialBoomerIndex int
-			var foundSpecialBoomer bool
+			// Check if special millennial already has the special boomer
+			specialMillenialMatches := wichtelMatches[specialMillenial]
+			var specialMillenialHasBoomer bool
+			var specialMillenialBoomerIndex int
 
-			for participant, matches := range wichtelMatches {
-				for i, match := range matches {
-					if match.email == specialBoomer {
-						currentOwnerOfSpecialBoomer = participant
-						specialBoomerIndex = i
-						foundSpecialBoomer = true
-						break
-					}
-				}
-				if foundSpecialBoomer {
+			for i, match := range specialMillenialMatches {
+				if match.email == specialBoomer {
+					specialMillenialHasBoomer = true
+					specialMillenialBoomerIndex = i
 					break
 				}
 			}
 
-			if foundSpecialBoomer && currentOwnerOfSpecialBoomer != specialMillenial {
-				fmt.Printf("Special boomer is assigned to different participant, performing swap\n")
-
-				// Get the matches for both participants
-				specialMillenialMatches := wichtelMatches[specialMillenial]
-				currentOwnerMatches := wichtelMatches[currentOwnerOfSpecialBoomer]
-
-				// Perform the swap: give special millennial the special boomer,
-				// and give current owner what the special millennial had at the same index
-				temp := specialMillenialMatches[specialBoomerIndex]
-				wichtelMatches[specialMillenial][specialBoomerIndex] = currentOwnerMatches[specialBoomerIndex]
-				wichtelMatches[currentOwnerOfSpecialBoomer][specialBoomerIndex] = temp
-
-				fmt.Printf("✅ Successfully swapped! Special millennial now gets special boomer as %s\n", wichtelMatches[specialMillenial][specialBoomerIndex].group)
-			} else if currentOwnerOfSpecialBoomer == specialMillenial {
-				fmt.Printf("✅ Special millennial already has special boomer - no swap needed!\n")
+			if specialMillenialHasBoomer {
+				fmt.Printf("✅ Special millennial already has special boomer at index %d - no swap needed!\n", specialMillenialBoomerIndex)
 			} else {
-				fmt.Printf("⚠️  Could not find special boomer in the matches\n")
+				// Find who currently has the special boomer
+				var currentOwnerOfSpecialBoomer string
+				var specialBoomerIndex int
+				var foundSpecialBoomer bool
+
+				for participant, matches := range wichtelMatches {
+					for i, match := range matches {
+						if match.email == specialBoomer {
+							currentOwnerOfSpecialBoomer = participant
+							specialBoomerIndex = i
+							foundSpecialBoomer = true
+							break
+						}
+					}
+					if foundSpecialBoomer {
+						break
+					}
+				}
+
+				if foundSpecialBoomer {
+					fmt.Printf("Special boomer is assigned to different participant, performing swap\n")
+
+					// Get the matches for both participants
+					currentOwnerMatches := wichtelMatches[currentOwnerOfSpecialBoomer]
+
+					// Find what the current owner has left (the other match, not the special boomer)
+					otherIndexForCurrentOwner := 1 - specialBoomerIndex
+					currentOwnerOtherMatch := currentOwnerMatches[otherIndexForCurrentOwner]
+
+					// Find which of the special millennial's matches we should give to avoid duplicates
+					var swapIndex int
+					if specialMillenialMatches[0].email != currentOwnerOtherMatch.email {
+						swapIndex = 0
+					} else if specialMillenialMatches[1].email != currentOwnerOtherMatch.email {
+						swapIndex = 1
+					} else {
+						fmt.Printf("⚠️  Cannot perform swap - would create duplicate for current owner\n")
+						return
+					}
+
+					// Perform the swap: give special millennial the special boomer,
+					// and give current owner the non-duplicate match from special millennial
+					temp := specialMillenialMatches[swapIndex]
+					wichtelMatches[specialMillenial][swapIndex] = currentOwnerMatches[specialBoomerIndex]
+					wichtelMatches[currentOwnerOfSpecialBoomer][specialBoomerIndex] = temp
+
+					fmt.Printf("✅ Successfully swapped! Special millennial now gets special boomer as %s\n", wichtelMatches[specialMillenial][swapIndex].group)
+				} else {
+					fmt.Printf("⚠️  Could not find special boomer in the matches\n")
+				}
 			}
 		} else {
 			if !specialBoomerExists {
