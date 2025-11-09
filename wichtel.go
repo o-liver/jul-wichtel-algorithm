@@ -112,21 +112,19 @@ Start:
 	specialBoomer := os.Getenv("SPECIAL_BOOMER_EMAIL")
 
 	if specialMillenial != "" && specialBoomer != "" {
-		fmt.Printf("Special pairing environment variables detected:\n")
-		fmt.Printf("  SPECIAL_MILLENNIAL_EMAIL: %s\n", specialMillenial)
-		fmt.Printf("  SPECIAL_BOOMER_EMAIL: %s\n", specialBoomer)
-		
+		fmt.Printf("Special pairing environment variables detected - applying custom pairing logic\n")
+
 		specialBoomerExists := contains(babyBoomers, specialBoomer)
 		specialMillenialExists := contains(millennials, specialMillenial)
 
 		if specialBoomerExists && specialMillenialExists {
-			fmt.Printf("Checking for special pairing: %s should get %s\n", specialMillenial, specialBoomer)
-			
+			fmt.Printf("Checking for special pairing between designated participants\n")
+
 			// Find who currently has the special boomer
 			var currentOwnerOfSpecialBoomer string
 			var specialBoomerIndex int
 			var foundSpecialBoomer bool
-			
+
 			for participant, matches := range wichtelMatches {
 				for i, match := range matches {
 					if match.email == specialBoomer {
@@ -140,32 +138,32 @@ Start:
 					break
 				}
 			}
-			
+
 			if foundSpecialBoomer && currentOwnerOfSpecialBoomer != specialMillenial {
-				fmt.Printf("Current owner of %s is %s, swapping with %s\n", specialBoomer, currentOwnerOfSpecialBoomer, specialMillenial)
-				
+				fmt.Printf("Special boomer is assigned to different participant, performing swap\n")
+
 				// Get the matches for both participants
 				specialMillenialMatches := wichtelMatches[specialMillenial]
 				currentOwnerMatches := wichtelMatches[currentOwnerOfSpecialBoomer]
-				
+
 				// Perform the swap: give special millennial the special boomer,
 				// and give current owner what the special millennial had at the same index
 				temp := specialMillenialMatches[specialBoomerIndex]
 				wichtelMatches[specialMillenial][specialBoomerIndex] = currentOwnerMatches[specialBoomerIndex]
 				wichtelMatches[currentOwnerOfSpecialBoomer][specialBoomerIndex] = temp
-				
-				fmt.Printf("✅ Successfully swapped! %s now gets %s as %s\n", specialMillenial, specialBoomer, wichtelMatches[specialMillenial][specialBoomerIndex].group)
+
+				fmt.Printf("✅ Successfully swapped! Special millennial now gets special boomer as %s\n", wichtelMatches[specialMillenial][specialBoomerIndex].group)
 			} else if currentOwnerOfSpecialBoomer == specialMillenial {
-				fmt.Printf("✅ %s already has %s - no swap needed!\n", specialMillenial, specialBoomer)
+				fmt.Printf("✅ Special millennial already has special boomer - no swap needed!\n")
 			} else {
-				fmt.Printf("⚠️  Could not find %s in the matches\n", specialBoomer)
+				fmt.Printf("⚠️  Could not find special boomer in the matches\n")
 			}
 		} else {
 			if !specialBoomerExists {
-				fmt.Printf("⚠️  Special boomer %s not found in baby boomers list\n", specialBoomer)
+				fmt.Printf("⚠️  Special boomer not found in baby boomers list\n")
 			}
 			if !specialMillenialExists {
-				fmt.Printf("⚠️  Special millennial %s not found in millennials list\n", specialMillenial)
+				fmt.Printf("⚠️  Special millennial not found in millennials list\n")
 			}
 		}
 	} else {
