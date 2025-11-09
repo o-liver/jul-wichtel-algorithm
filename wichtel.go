@@ -37,6 +37,9 @@ func main() {
 	participants := append(babyBoomers, millennials...)
 
 Start:
+	// Create a fresh random generator for each attempt
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	
 	fmt.Println("I'll be your Wichtel!")
 	fmt.Println("Adding millennial's twice into the hat.")
 	groupAMillennials := createSlipsOfPaper(millennials, "A")
@@ -44,7 +47,7 @@ Start:
 	theHat := append(groupAMillennials, groupBMillennials...)
 
 	// Shuffle the participants in the hat
-	shuffleTheHat(theHat)
+	shuffleTheHat(theHat, rng)
 
 	wichtelMatches := make(map[string][]slipOfPaper, len(participants))
 	for boomerIndex, boomer := range babyBoomers {
@@ -70,7 +73,7 @@ Start:
 	theHat = append(theHat, groupABabyBoomers...)
 	theHat = append(theHat, groupBBabyBoomers...)
 
-	shuffleTheHat(theHat)
+	shuffleTheHat(theHat, rng)
 
 	// Find matches for the millennials
 	for millennialIndex, millennial := range millennials {
@@ -195,8 +198,8 @@ func removeSlipOfPaperWithIndex(hat []slipOfPaper, index int) []slipOfPaper {
 	return newHat
 }
 
-func shuffleTheHat(hat []slipOfPaper) {
-	rand.Shuffle(len(hat), func(i, j int) {
+func shuffleTheHat(hat []slipOfPaper, rng *rand.Rand) {
+	rng.Shuffle(len(hat), func(i, j int) {
 		hat[i], hat[j] = hat[j], hat[i]
 	})
 }
