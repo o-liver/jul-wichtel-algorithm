@@ -193,13 +193,16 @@ Start:
 		} else {
 			if !specialBoomerExists {
 				fmt.Printf("⚠️  Special boomer not found in baby boomers list\n")
+				log.Fatal("SPECIAL_BOOMER_EMAIL environment variable is required but not set")
 			}
 			if !specialMillenialExists {
 				fmt.Printf("⚠️  Special millennial not found in millennials list\n")
+				log.Fatal("SPECIAL_MILLENNIAL_EMAIL environment variable is required but not set")
 			}
 		}
 	} else {
-		fmt.Println("No special pairing environment variables set - running normal algorithm")
+		fmt.Println("No special pairing environment variables set - aborting the run")
+		log.Fatal("SPECIAL_MILLENNIAL_EMAIL and SPECIAL_BOOMER_EMAIL environment variables are required but not set")
 	}
 
 	gmailService := setupGmailService()
